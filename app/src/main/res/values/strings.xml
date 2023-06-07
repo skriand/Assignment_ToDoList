@@ -2,8 +2,12 @@
     <string name="app_name">Assignment_ToDoList</string>
     <string name="home">All your tasks</string>
     <string name="add_task">Add task</string>
-    <string name="important">Important tasks</string>
+    <string name="important_title">Important tasks</string>
     <string name="empty_text">Select or add a task</string>
+
+    //Navbar
+    <string name="all">All</string>
+    <string name="important">Important</string>
 
     <string name="close">Close</string>
     <string name="save">Save</string>

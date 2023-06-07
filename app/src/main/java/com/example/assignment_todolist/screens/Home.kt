@@ -63,7 +63,7 @@ fun Home(navToAddItem: () -> Unit, navToItemDetails: (Any?) -> Unit) {
         },
         bottomBar = {
             var selectedItem by remember { mutableStateOf(0) }
-            val items = listOf("All", "Important")
+            val items = listOf(stringResource(id = R.string.all), stringResource(id = R.string.important))
             val icons = listOf(Icons.Filled.List, Icons.Filled.Favorite)
             NavigationBar {
                 items.forEachIndexed { index, item ->
