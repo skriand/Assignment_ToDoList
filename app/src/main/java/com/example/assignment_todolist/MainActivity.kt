@@ -69,24 +69,24 @@ fun ScreenMain() {
 
             // Lay down the Home Composable
             // and pass the navController
-            Home({navController.navigateTo(Routes.AddItem.route, Screen.Pane2)}) {id ->
+            Home({ navController.navigateTo(Routes.AddItem.route, Screen.Pane2) }) { id ->
                 navController.navigateTo(Routes.ItemDetails.route + "/${id}", Screen.Pane2)
             }
         }
 
         // Another Route : AddItem
         composable(Routes.AddItem.route) {
-            // Profile Screen
+            // AddItem Screen
             AddItem { navController.navigateTo(Routes.ItemDetails.route, Screen.Pane2) }
         }
 
         composable(Routes.ItemDetails.route) {
-            if(isSinglePane)
+            if (isSinglePane)
                 navController.navigateTo(Routes.Home.route, Screen.Pane1)
             else
                 EmptyScreen()
         }
-        
+
         // Items Route, Notice the "/{id}" in last,
         // its the argument passed down from homeScreen
         composable(Routes.ItemDetails.route + "/{id}") { twoPaneBackStack ->
@@ -95,15 +95,18 @@ fun ScreenMain() {
             val id = twoPaneBackStack.arguments?.getString("id")
 
             // Pass the extracted Counter
-           ItemDetails({navController.navigateTo(Routes.ItemDetails.route, Screen.Pane2)}, id = id)
+            ItemDetails(
+                { navController.navigateTo(Routes.ItemDetails.route, Screen.Pane2) },
+                id = id
+            )
         }
     }
 }
 
 @Preview
 @Composable
-fun EmptyScreen(){
-    Row(horizontalArrangement = Arrangement.Center){
+fun EmptyScreen() {
+    Row(horizontalArrangement = Arrangement.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier

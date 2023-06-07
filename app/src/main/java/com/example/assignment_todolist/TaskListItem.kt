@@ -27,7 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.assignment_todolist.data.Task
-import com.microsoft.device.dualscreen.twopanelayout.twopanelayoutnav.composable
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,21 +44,26 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
         ) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
-                    Checkbox(
-                        checked = isChecked.value,
-                        onCheckedChange = { isChecked.value = it },
-                        enabled = true
-                    )
+                    .align(Alignment.CenterVertically)
+            ) {
+                Checkbox(
+                    checked = isChecked.value,
+                    onCheckedChange = { isChecked.value = it },
+                    enabled = true
+                )
             }
             Column(
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
+                    .align(Alignment.CenterVertically)
+            ) {
                 Text(
                     text = task.title,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = if (isChecked.value) TextStyle(fontSize = 16.sp, textDecoration = TextDecoration.LineThrough) else TextStyle(fontSize = 16.sp, textDecoration = TextDecoration.None)
+                    style = if (isChecked.value) TextStyle(
+                        fontSize = 16.sp,
+                        textDecoration = TextDecoration.LineThrough
+                    ) else TextStyle(fontSize = 16.sp, textDecoration = TextDecoration.None)
                 )
                 Text(
                     text = task.description,
@@ -71,19 +75,19 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
             Spacer(Modifier.weight(1f))
             Column(
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
+                    .align(Alignment.CenterVertically)
+            ) {
                 val checked = remember { mutableStateOf(false) }
-                    IconToggleButton(
-                        modifier = Modifier.
-                            then(Modifier.requiredSize(40.dp)),
-                        checked = checked.value,
-                        onCheckedChange = { checked.value = it }) {
-                        Icon(
-                            imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Important",
-                        )
-                    }
+                IconToggleButton(
+                    modifier = Modifier.then(Modifier.requiredSize(40.dp)),
+                    checked = checked.value,
+                    onCheckedChange = { checked.value = it }) {
+                    Icon(
+                        imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = "Important",
+                    )
                 }
+            }
         }
     }
 }

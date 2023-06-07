@@ -60,7 +60,7 @@ fun AddItem(navController: () -> Unit) {
             )
         },
         bottomBar = {
-            Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)){
+            Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Button(onClick = { /*TODO*/ }) {
                     Text(text = stringResource(id = R.string.save))
                 }
@@ -70,7 +70,8 @@ fun AddItem(navController: () -> Unit) {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(horizontal = 16.dp, vertical = 6.dp)) {
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
                 var text by remember { mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),

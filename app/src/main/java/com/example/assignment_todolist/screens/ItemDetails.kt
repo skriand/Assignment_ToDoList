@@ -3,7 +3,6 @@ package com.example.assignment_todolist.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
@@ -28,7 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.assignment_todolist.R
-import com.example.assignment_todolist.Routes
 import com.example.assignment_todolist.data.DataProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,12 +37,15 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
         topBar = {
             LargeTopAppBar(
                 title = {
-                        Text(
-                            DataProvider.taskList[id!!.toInt()].title,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = if (isChecked.value) TextStyle(fontSize = 28.sp, textDecoration = TextDecoration.LineThrough) else TextStyle(fontSize = 28.sp, textDecoration = TextDecoration.None)
-                        )
+                    Text(
+                        DataProvider.taskList[id!!.toInt()].title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = if (isChecked.value) TextStyle(
+                            fontSize = 28.sp,
+                            textDecoration = TextDecoration.LineThrough
+                        ) else TextStyle(fontSize = 28.sp, textDecoration = TextDecoration.None)
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController() }) {
@@ -83,7 +84,8 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(horizontal = 16.dp, vertical = 6.dp)) {
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
                 Text(text = DataProvider.taskList[id!!.toInt()].description)
             }
         }
