@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Assignment_ToDoList</string>
+    <string name="home">All your tasks</string>
+    <string name="add_task">Add task</string>
+    <string name="important">Important tasks</string>
+    <string name="empty_text">Select or add a task</string>
+
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+</resources>
