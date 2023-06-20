@@ -1,5 +1,6 @@
-package com.example.assignment_todolist.screens
+package com.example.assignment_todolist.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.assignment_todolist.R
+import com.example.assignment_todolist.data.DataProvider
+import com.example.assignment_todolist.data.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,9 @@ fun AddItem(navController: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var description by remember { mutableStateOf(TextFieldValue("")) }
+    BackHandler(enabled = true, onBack = {navController()})
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -61,7 +67,10 @@ fun AddItem(navController: () -> Unit) {
         },
         bottomBar = {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = {
+                    DataProvider.taskList.add(Task(text.text, description.text))
+                    navController()
+                }) {
                     Text(text = stringResource(id = R.string.save))
                 }
             }
@@ -72,7 +81,6 @@ fun AddItem(navController: () -> Unit) {
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
-                var text by remember { mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = text,
@@ -83,7 +91,6 @@ fun AddItem(navController: () -> Unit) {
                     }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                var description by remember { mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = description,

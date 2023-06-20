@@ -1,4 +1,4 @@
-package com.example.assignment_todolist
+package com.example.assignment_todolist.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +32,14 @@ import com.example.assignment_todolist.data.Task
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
-    val isChecked = remember { mutableStateOf(false) }
+    val isChecked = remember {
+        if (task != null) mutableStateOf(task.done)
+        else mutableStateOf(false)
+    }
+    val checked = remember {
+        if (task != null) mutableStateOf(task.important)
+        else mutableStateOf(false)
+    }
     Card(
         onClick = { navTo(task.id) },
         modifier = Modifier
@@ -48,7 +55,10 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
             ) {
                 Checkbox(
                     checked = isChecked.value,
-                    onCheckedChange = { isChecked.value = it },
+                    onCheckedChange = {
+                        isChecked.value = it
+                        task.done = it
+                                      },
                     enabled = true
                 )
             }
@@ -56,32 +66,38 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = task.title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = if (isChecked.value) TextStyle(
-                        fontSize = 16.sp,
-                        textDecoration = TextDecoration.LineThrough
-                    ) else TextStyle(fontSize = 16.sp, textDecoration = TextDecoration.None)
-                )
-                Text(
-                    text = task.description,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                task.title?.let {
+                    Text(
+                        text = it,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = if (isChecked.value) TextStyle(
+                            fontSize = 16.sp,
+                            textDecoration = TextDecoration.LineThrough
+                        ) else TextStyle(fontSize = 16.sp, textDecoration = TextDecoration.None)
+                    )
+                }
+                task.description?.let {
+                    Text(
+                        text = it,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
             Spacer(Modifier.weight(1f))
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             ) {
-                val checked = remember { mutableStateOf(false) }
                 IconToggleButton(
                     modifier = Modifier.then(Modifier.requiredSize(40.dp)),
                     checked = checked.value,
-                    onCheckedChange = { checked.value = it }) {
+                    onCheckedChange = {
+                        checked.value = it
+                        task.important = it
+                    }) {
                     Icon(
                         imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Important",

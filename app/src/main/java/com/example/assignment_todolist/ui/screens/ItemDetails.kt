@@ -1,5 +1,6 @@
-package com.example.assignment_todolist.screens
+package com.example.assignment_todolist.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -32,20 +33,35 @@ import com.example.assignment_todolist.data.DataProvider
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetails(navController: () -> Unit, id: String?) {
-    val isChecked = remember { mutableStateOf(false) }
+
+    val task = DataProvider.taskList.find { it.id == id!!.toInt() }
+    val index = DataProvider.taskList.indexOfFirst{
+            it.id == id!!.toInt()
+    }
+    val isChecked = remember {
+        if (task != null) mutableStateOf(task.done)
+        else mutableStateOf(false)
+    }
+    val checked = remember {
+        if (task != null) mutableStateOf(task.important)
+        else mutableStateOf(false)
+    }
+    BackHandler(enabled = true, onBack = {navController()})
     Scaffold(
         topBar = {
             LargeTopAppBar(
                 title = {
-                    Text(
-                        DataProvider.taskList[id!!.toInt()].title,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = if (isChecked.value) TextStyle(
-                            fontSize = 28.sp,
-                            textDecoration = TextDecoration.LineThrough
-                        ) else TextStyle(fontSize = 28.sp, textDecoration = TextDecoration.None)
-                    )
+                    task?.title?.let {
+                        Text(
+                            it,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = if (isChecked.value) TextStyle(
+                                fontSize = 28.sp,
+                                textDecoration = TextDecoration.LineThrough
+                            ) else TextStyle(fontSize = 28.sp, textDecoration = TextDecoration.None)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController() }) {
@@ -56,7 +72,10 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = {
+                        DataProvider.taskList.removeAt(index)
+                        navController()
+                    }) {
                         Icon(Icons.Filled.Delete, contentDescription = "Delete")
                     }
                 }
@@ -66,13 +85,18 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
             BottomAppBar {
                 Checkbox(
                     checked = isChecked.value,
-                    onCheckedChange = { isChecked.value = it },
+                    onCheckedChange = {
+                        isChecked.value = it
+                        task?.done = it
+                                      },
                     enabled = true
                 )
-                val checked = remember { mutableStateOf(false) }
                 IconToggleButton(
                     checked = checked.value,
-                    onCheckedChange = { checked.value = it }) {
+                    onCheckedChange = {
+                        checked.value = it
+                        task?.important = it
+                    }) {
                     Icon(
                         imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Important",
@@ -86,7 +110,7 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
-                Text(text = DataProvider.taskList[id!!.toInt()].description)
+                task?.description?.let { Text(text = it) }
             }
         }
     )

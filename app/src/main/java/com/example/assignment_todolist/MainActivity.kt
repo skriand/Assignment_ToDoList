@@ -22,19 +22,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.example.assignment_todolist.screens.AddItem
-import com.example.assignment_todolist.screens.Home
-import com.example.assignment_todolist.screens.ItemDetails
+import com.example.assignment_todolist.data.AppDatabase
+import com.example.assignment_todolist.data.DataProvider.taskList
+import com.example.assignment_todolist.data.Task
+import com.example.assignment_todolist.ui.screens.AddItem
+import com.example.assignment_todolist.ui.screens.Home
+import com.example.assignment_todolist.ui.screens.ItemDetails
 import com.example.assignment_todolist.ui.theme.Assignment_ToDoListTheme
 import com.microsoft.device.dualscreen.twopanelayout.Screen
 import com.microsoft.device.dualscreen.twopanelayout.TwoPaneLayoutNav
-import com.microsoft.device.dualscreen.twopanelayout.twopanelayoutnav.composable
 import com.microsoft.device.dualscreen.twopanelayout.TwoPaneMode
+import com.microsoft.device.dualscreen.twopanelayout.twopanelayoutnav.composable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            //AppDatabase.getDatabase(applicationContext)?.taskDao()?.insert(*taskList.toTypedArray());
+            taskList =
+                (AppDatabase.getDatabase(applicationContext)?.taskDao()?.allRepos as List<Task>).toMutableList()
+        }
+
         setContent {
             Assignment_ToDoListTheme {
                 // A surface container using the 'background' color from the theme
