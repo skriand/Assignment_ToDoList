@@ -1,6 +1,9 @@
 package com.example.assignment_todolist.data
 
 object DataProvider {
+
+    lateinit var dao: RepoDao
+
     var taskList = mutableListOf(
         Task(
             title = "Wash the dishes",

@@ -29,30 +29,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.assignment_todolist.R
 import com.example.assignment_todolist.data.DataProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemDetails(navController: () -> Unit, id: String?) {
+fun ItemDetails(
+    navController: () -> Unit,
+    id: String?,
+    checkState: String,
+    onCheckChange: (String) -> Unit
+) {
 
-    val task = DataProvider.taskList.find { it.id == id!!.toInt() }
-    val index = DataProvider.taskList.indexOfFirst{
-            it.id == id!!.toInt()
+    val index = DataProvider.taskList.indexOfFirst {
+        it.id == id!!.toInt()
     }
+    val task = DataProvider.taskList[index]
     val isChecked = remember { mutableStateOf(false) }
-    if (task != null) {
-        isChecked.value = task.done
-    }
+    isChecked.value = task.done
     val checked = remember { mutableStateOf(false) }
-    if (task != null) {
-        checked.value = task.important
-    }
+    checked.value = task.important
 
-    BackHandler(enabled = true, onBack = {navController()})
+    BackHandler(enabled = true, onBack = { navController() })
     Scaffold(
         topBar = {
             LargeTopAppBar(
                 title = {
-                    task?.title?.let {
+                    task.title?.let {
                         Text(
                             it,
                             maxLines = 1,
@@ -74,10 +78,16 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                 },
                 actions = {
                     IconButton(onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DataProvider.dao.delete(task)
+                        }
                         DataProvider.taskList.removeAt(index)
                         navController()
                     }) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(id = R.string.delete)
+                        )
                     }
                 }
             )
@@ -88,21 +98,27 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                     checked = isChecked.value,
                     onCheckedChange = {
                         isChecked.value = it
-                        if (task != null) {
-                            task.done = it
+                        task.done = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DataProvider.dao.update(task)
                         }
-                                      },
-                        enabled = true
-                    )
+                        onCheckChange(it.toString() + 0)
+                    },
+                    enabled = true
+                )
                 IconToggleButton(
                     checked = checked.value,
                     onCheckedChange = {
                         checked.value = it
-                        task?.important = it
+                        task.important = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DataProvider.dao.update(task)
+                        }
+                        onCheckChange(it.toString() + 1)
                     }) {
                     Icon(
                         imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Important",
+                        contentDescription = stringResource(id = R.string.important),
                     )
                 }
             }
@@ -113,7 +129,7 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
-                task?.description?.let { Text(text = it) }
+                task.description?.let { Text(text = it) }
             }
         }
     )

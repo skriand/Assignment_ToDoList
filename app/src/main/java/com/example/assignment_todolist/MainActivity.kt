@@ -17,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.assignment_todolist.data.AppDatabase
+import com.example.assignment_todolist.data.DataProvider.dao
 import com.example.assignment_todolist.data.DataProvider.taskList
 import com.example.assignment_todolist.data.Task
 import com.example.assignment_todolist.ui.screens.AddItem
@@ -44,9 +49,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         CoroutineScope(Dispatchers.IO).launch {
-            //AppDatabase.getDatabase(applicationContext)?.taskDao()?.insert(*taskList.toTypedArray());
-            taskList =
-                AppDatabase.getDatabase(applicationContext)?.taskDao()?.allRepos as MutableList<Task>
+            dao = AppDatabase.getDatabase(applicationContext)?.taskDao()!!
+            if (dao.allRepos.isNullOrEmpty()) dao.insert(*taskList.toTypedArray())
+            else taskList = dao.allRepos as MutableList<Task>
         }
 
         setContent {
@@ -70,6 +75,11 @@ fun ScreenMain() {
 
     val navController = rememberNavController()
 
+    var checkState by remember { mutableStateOf("") }
+    val onCheckChange = { check: String ->
+        checkState = check
+    }
+
     TwoPaneLayoutNav(
         navController = navController,
         paneMode = TwoPaneMode.HorizontalSingle,
@@ -83,7 +93,10 @@ fun ScreenMain() {
 
             // Lay down the Home Composable
             // and pass the navController
-            Home({ navController.navigateTo(Routes.AddItem.route, Screen.Pane2) }) { id ->
+            Home(
+                { navController.navigateTo(Routes.AddItem.route, Screen.Pane2) }, checkState,
+                onCheckChange
+            ) { id ->
                 navController.navigateTo(Routes.ItemDetails.route + "/${id}", Screen.Pane2)
             }
         }
@@ -111,7 +124,9 @@ fun ScreenMain() {
             // Pass the extracted Counter
             ItemDetails(
                 { navController.navigateTo(Routes.ItemDetails.route, Screen.Pane2) },
-                id = id
+                id = id,
+                checkState,
+                onCheckChange
             )
         }
     }

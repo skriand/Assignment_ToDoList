@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import com.example.assignment_todolist.R
 import com.example.assignment_todolist.data.DataProvider
 import com.example.assignment_todolist.data.Task
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +45,7 @@ fun AddItem(navController: () -> Unit) {
     )
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf(TextFieldValue("")) }
-    BackHandler(enabled = true, onBack = {navController()})
+    BackHandler(enabled = true, onBack = { navController() })
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -68,6 +71,9 @@ fun AddItem(navController: () -> Unit) {
         bottomBar = {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Button(onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        DataProvider.dao.insert(Task(text.text, description.text))
+                    }
                     DataProvider.taskList.add(Task(text.text, description.text))
                     navController()
                 }) {

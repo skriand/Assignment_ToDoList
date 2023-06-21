@@ -26,12 +26,21 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.assignment_todolist.data.DataProvider
 import com.example.assignment_todolist.data.Task
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
+fun TaskListItem(
+    task: Task,
+    navTo: (Any) -> Unit,
+    checkState: String,
+    onCheckChange: (String) -> Unit
+) {
 
     val isChecked = remember { mutableStateOf(false) }
     isChecked.value = task.done
@@ -56,6 +65,10 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
                     onCheckedChange = {
                         isChecked.value = it
                         task.done = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DataProvider.dao.update(task)
+                        }
+                        onCheckChange(it.toString() + 0)
                     },
                     enabled = true
                 )
@@ -95,6 +108,10 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
                     onCheckedChange = {
                         checked.value = it
                         task.important = it
+                        CoroutineScope(Dispatchers.IO).launch {
+                            DataProvider.dao.update(task)
+                        }
+                        onCheckChange(it.toString() + 1)
                     }) {
                     Icon(
                         imageVector = if (checked.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,

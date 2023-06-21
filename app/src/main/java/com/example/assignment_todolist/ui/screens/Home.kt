@@ -34,21 +34,39 @@ import com.example.assignment_todolist.ui.TaskListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navToAddItem: () -> Unit, navToItemDetails: (Any?) -> Unit) {
+fun Home(
+    navToAddItem: () -> Unit,
+    checkState: String,
+    onCheckChange: (String) -> Unit,
+    navToItemDetails: (Any) -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
+
+    var selectedItem by remember { mutableStateOf(0) }
+    val enabledItem = remember {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = {
-                    Text(
-                        stringResource(R.string.home),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    when (selectedItem) {
+                        1 -> Text(
+                            text = stringResource(R.string.important_title),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        else -> Text(
+                            text = stringResource(R.string.home),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 },
                 scrollBehavior = scrollBehavior,
                 actions = {
@@ -62,8 +80,8 @@ fun Home(navToAddItem: () -> Unit, navToItemDetails: (Any?) -> Unit) {
             )
         },
         bottomBar = {
-            var selectedItem by remember { mutableStateOf(0) }
-            val items = listOf(stringResource(id = R.string.all), stringResource(id = R.string.important))
+            val items =
+                listOf(stringResource(id = R.string.all), stringResource(id = R.string.important))
             val icons = listOf(Icons.Filled.List, Icons.Filled.Favorite)
             NavigationBar {
                 items.forEachIndexed { index, item ->
@@ -71,13 +89,30 @@ fun Home(navToAddItem: () -> Unit, navToItemDetails: (Any?) -> Unit) {
                         icon = { Icon(icons[index], contentDescription = item) },
                         label = { Text(item) },
                         selected = selectedItem == index,
-                        onClick = { selectedItem = index }
+                        onClick = { selectedItem = index },
+                        enabled = when (index) {
+                            1 -> {
+                                DataProvider.taskList.any { it.important }
+                            }
+
+                            else -> true
+                        }
                     )
                 }
             }
         },
         content = { innerPadding ->
-            val tasks = remember { DataProvider.taskList }
+            val tasks =
+                when (selectedItem) {
+                    1 -> {
+                        DataProvider.taskList.filter { it.important }
+                    }
+
+                    else -> {
+                        DataProvider.taskList
+                    }
+                }
+
             LazyColumn(
                 modifier = Modifier.padding(vertical = 10.dp),
                 contentPadding = innerPadding
@@ -85,7 +120,7 @@ fun Home(navToAddItem: () -> Unit, navToItemDetails: (Any?) -> Unit) {
                 items(
                     items = tasks,
                     itemContent = {
-                        TaskListItem(task = it, navToItemDetails)
+                        TaskListItem(task = it, navToItemDetails, checkState, onCheckChange)
                     })
             }
         }
