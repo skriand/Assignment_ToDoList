@@ -32,14 +32,12 @@ import com.example.assignment_todolist.data.Task
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
-    val isChecked = remember {
-        if (task != null) mutableStateOf(task.done)
-        else mutableStateOf(false)
-    }
-    val checked = remember {
-        if (task != null) mutableStateOf(task.important)
-        else mutableStateOf(false)
-    }
+
+    val isChecked = remember { mutableStateOf(false) }
+    isChecked.value = task.done
+    val checked = remember { mutableStateOf(false) }
+    checked.value = task.important
+
     Card(
         onClick = { navTo(task.id) },
         modifier = Modifier
@@ -58,7 +56,7 @@ fun TaskListItem(task: Task, navTo: (Any?) -> Unit) {
                     onCheckedChange = {
                         isChecked.value = it
                         task.done = it
-                                      },
+                    },
                     enabled = true
                 )
             }

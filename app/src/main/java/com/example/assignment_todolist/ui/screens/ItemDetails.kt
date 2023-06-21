@@ -38,9 +38,9 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
     val index = DataProvider.taskList.indexOfFirst{
             it.id == id!!.toInt()
     }
-    val isChecked = remember {
-        if (task != null) mutableStateOf(task.done)
-        else mutableStateOf(false)
+    val isChecked = remember { mutableStateOf(false) }
+    if (task != null) {
+        isChecked.value = task.done
     }
     val checked = remember {
         if (task != null) mutableStateOf(task.important)
@@ -87,10 +87,12 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
                     checked = isChecked.value,
                     onCheckedChange = {
                         isChecked.value = it
-                        task?.done = it
+                        if (task != null) {
+                            task.done = it
+                        }
                                       },
-                    enabled = true
-                )
+                        enabled = true
+                    )
                 IconToggleButton(
                     checked = checked.value,
                     onCheckedChange = {

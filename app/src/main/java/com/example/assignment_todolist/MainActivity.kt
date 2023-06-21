@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.assignment_todolist.data.AppDatabase
 import com.example.assignment_todolist.data.DataProvider.taskList
@@ -47,7 +46,7 @@ class MainActivity : ComponentActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             //AppDatabase.getDatabase(applicationContext)?.taskDao()?.insert(*taskList.toTypedArray());
             taskList =
-                (AppDatabase.getDatabase(applicationContext)?.taskDao()?.allRepos as List<Task>).toMutableList()
+                AppDatabase.getDatabase(applicationContext)?.taskDao()?.allRepos as MutableList<Task>
         }
 
         setContent {
