@@ -42,10 +42,11 @@ fun ItemDetails(navController: () -> Unit, id: String?) {
     if (task != null) {
         isChecked.value = task.done
     }
-    val checked = remember {
-        if (task != null) mutableStateOf(task.important)
-        else mutableStateOf(false)
+    val checked = remember { mutableStateOf(false) }
+    if (task != null) {
+        checked.value = task.important
     }
+
     BackHandler(enabled = true, onBack = {navController()})
     Scaffold(
         topBar = {
