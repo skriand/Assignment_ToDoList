@@ -45,9 +45,6 @@ fun Home(
     )
 
     var selectedItem by remember { mutableStateOf(0) }
-    val enabledItem = remember {
-        mutableStateOf(false)
-    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
